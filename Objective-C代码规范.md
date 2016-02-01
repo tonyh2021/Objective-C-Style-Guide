@@ -258,6 +258,9 @@ NSDictionary *stillWrong = @{
 
 ###基本原则
 
+- 仿照 Cocoa 风格来，使用长命名风格。
+- 变量命名推荐的命名语素顺序是：最开头是命名空间简写，然后越重要、区别度越大的语素越要往前放。经典的结构是：作用范围+限定修饰+类型。
+
 ####清晰
 
 命名应该尽可能的清晰和简洁，但在Objective-C中，**清晰比简洁更重要**。由于Xcode强大的自动补全功能，我们不必担心名称过长的问题。
@@ -283,6 +286,7 @@ remove:
 ```
 
 不要使用单词的简写，拼写出完整的单词：
+
 ```objective-c
 //清晰
 destinationSelection
@@ -321,7 +325,7 @@ displayName
 
 整个工程的命名风格要保持一致性，最好和苹果SDK的代码保持统一。不同类中完成相似功能的方法应该叫一样的名字，比如我们总是用`count`来返回集合的个数，不能在A类中使用`count`而在B类中使用`getNumber`。
 
-###使用前缀
+###使用前缀（命名空间）
 
 如果代码需要打包成Framework给别的工程使用，或者工程项目非常庞大，需要拆分成不同的模块，使用命名前缀是非常有用的。
 
@@ -431,6 +435,12 @@ Objective-C的方法名通常都比较长，这是为了让程序有更好地可
 ...title:(NSString *)aString
 ```
 
+以 `alloc`、`copy`、`init`、`mutableCopy`、`new` 开头的方法要注意，它们会改变ARC的行为。
+
+以 `get`、`set` 开头的方法有特殊的意义，不要随意定义。
+`set` 是属性默认的设置方法，如果函数不是为了设置类成员，则不要用 `set` 开头，可用 `setup` 替代。
+`get` 和属性方法无关，但在 Cocoa 中，其标准行为是通过引用传值，而不是直接返回结果的。欲获取变量，直接以变量名为名，如：`userInfomation`，而不是 `getUserInfomation`。
+
 ###存取方法（Accessor Methods）
 
 存取方法是指用来获取和设置类属性值的方法，属性的不同类型，对应着不同的存取方法规范：
@@ -459,17 +469,20 @@ Objective-C的方法名通常都比较长，这是为了让程序有更好地可
 ```
 
 命名存取方法时不要将动词转化为被动形式来使用：
+
 ```objective-c
 //正确
 - (void)setAcceptsGlyphInfo:(BOOL)flag;
 - (BOOL)acceptsGlyphInfo;
 
 //错误，不要使用动词的被动形式
+
 - (void)setGlyphInfoAccepted:(BOOL)flag;
 - (BOOL)glyphInfoAccepted;
 ```
 
 可以使用`can`,`should`,`will`等词来协助表达存取方法的意思，但不要使用`do`,和`does`：
+
 ```objective-c
 //正确
 - (void)setCanHide:(BOOL)flag;
@@ -483,6 +496,7 @@ Objective-C的方法名通常都比较长，这是为了让程序有更好地可
 ```
 
 为什么Objective-C中不适用`get`前缀来表示属性获取方法？因为`get`在Objective-C中通常只用来表示从函数指针返回值的函数：
+
 ```objective-c
 //三个参数都是作为函数的返回值来使用的，这样的函数名可以使用"get"前缀
 - (void)getLineDash:(float *)pattern count:(int *)count phase:(float *)phase;
@@ -493,6 +507,7 @@ Objective-C的方法名通常都比较长，这是为了让程序有更好地可
 当特定的事件发生时，对象会触发它注册的委托方法。委托是Objective-C中常用的传递消息的方式。委托有它固定的命名范式。
 
 一个委托方法的第一个参数是触发它的对象，第一个关键词是触发对象的类名，除非委托方法只有一个名为`sender`的参数：
+
 ```objective-c
 //第一个关键词为触发委托的类名
 - (BOOL)tableView:(NSTableView *)tableView shouldSelectRow:(int)row;
@@ -503,6 +518,7 @@ Objective-C的方法名通常都比较长，这是为了让程序有更好地可
 ```
 
 根据委托方法触发的时机和目的，使用`should`,`will`,`did`等关键词
+
 ```objective-c
 - (void)browserDidScroll:(NSBrowser *)sender;
 
